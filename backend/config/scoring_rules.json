@@ -1,0 +1,61 @@
+{
+  "profiles": {
+    "Athlete": {
+      "food": {
+        "healthy_bonus": 40,
+        "junk_penalty": -20
+      },
+      "movement": {
+        "max": 120,
+        "per_minute": 3
+      },
+      "sleep": {
+        "optimal_max": 9,
+        "optimal_min": 8,
+        "penalty_per_hour": -8
+      }
+    },
+    "Student": {
+      "food": {
+        "healthy_bonus": 50,
+        "junk_penalty": -30
+      },
+      "movement": {
+        "max": 100,
+        "per_minute": 2
+      },
+      "sleep": {
+        "optimal_max": 8,
+        "optimal_min": 7,
+        "penalty_per_hour": -10
+      }
+    },
+    "Worker": {
+      "food": {
+        "healthy_bonus": 45,
+        "junk_penalty": -25
+      },
+      "movement": {
+        "max": 90,
+        "per_minute": 2
+      },
+      "sleep": {
+        "optimal_max": 8,
+        "optimal_min": 7,
+        "penalty_per_hour": -12
+      }
+    }
+  },
+  "sustainability": {
+    "food": {
+      "meat": -30,
+      "plant_based": 40,
+      "processed": -20
+    },
+    "transport": {
+      "bike": 45,
+      "car": -30,
+      "walk": 50
+    }
+  }
+}

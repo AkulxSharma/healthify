@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LifeMosaic Weekly Summary</title>
+    <style>
+      body {
+        font-family: "Inter", Arial, sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .card {
+        background: #111827;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 16px;
+      }
+      .hero {
+        display: grid;
+        gap: 12px;
+      }
+      .hero-stat {
+        background: #0b1220;
+        border-radius: 12px;
+        padding: 12px 16px;
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+      ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .goal-row {
+        margin-bottom: 12px;
+      }
+      .goal-title {
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .goal-bar {
+        background: #1e293b;
+        border-radius: 999px;
+        height: 10px;
+        overflow: hidden;
+      }
+      .goal-bar span {
+        display: block;
+        height: 10px;
+        background: #38bdf8;
+      }
+      .goal-meta {
+        font-size: 12px;
+        margin-top: 4px;
+        color: #94a3b8;
+      }
+      .cta {
+        display: inline-block;
+        background: #38bdf8;
+        color: #0b1220;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 10px 18px;
+        border-radius: 999px;
+      }
+      .footer {
+        font-size: 12px;
+        color: #64748b;
+        text-align: center;
+        padding: 12px 0 24px;
+      }
+      .empty {
+        font-size: 14px;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="section-title">LifeMosaic Weekly Summary</div>
+        <div>Week of {week_range}</div>
+      </div>
+      <div class="card hero">
+        <div class="hero-stat">Savings: {savings_total}</div>
+        <div class="hero-stat">Spending: {spending_total} ({spending_vs_budget} vs last week)</div>
+        <div class="hero-stat">Wellness change: {wellness_change} pts</div>
+        <div class="hero-stat">Sustainability impact: {sustainability_total}</div>
+      </div>
+      <div class="card">
+        <div class="section-title">This week's highlights</div>
+        <ul>
+          {highlights_html}
+        </ul>
+      </div>
+      <div class="card">
+        <div class="section-title">Your insights</div>
+        <ul>
+          {insights_html}
+        </ul>
+      </div>
+      <div class="card">
+        <div class="section-title">Goal progress</div>
+        {goals_html}
+      </div>
+      <div class="card">
+        <div class="section-title">Friend activity</div>
+        <ul>
+          {friends_html}
+        </ul>
+      </div>
+      <div class="card" style="text-align:center;">
+        <a class="cta" href="{cta_url}">Open LifeMosaic</a>
+      </div>
+      <div class="footer">
+        Manage your notification preferences in the app to unsubscribe.
+      </div>
+    </div>
+  </body>
+</html>
