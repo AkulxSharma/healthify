@@ -1,0 +1,95 @@
+name: Weekly Dev Wellness Summary
+on:
+  schedule:
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  wellness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Compute stats
+        id: stats
+        run: |
+          since="$(date -u -d '7 days ago' +%Y-%m-%d)"
+          added=0
+          removed=0
+          while read -r a d f; do
+            if [ "$a" = "-" ]; then continue; fi
+            added=$((added + a))
+            removed=$((removed + d))
+          done < <(git log --since="$since" --numstat --pretty="")
+          tests_added=0
+          while read -r a d f; do
+            if [ "$a" = "-" ]; then continue; fi
+            case "$f" in
+              *test*|*__tests__*|*spec*) tests_added=$((tests_added + a));;
+            esac
+          done < <(git log --since="$since" --numstat --pretty="")
+          todo_touched=$(git log --since="$since" -p --unified=0 | grep -E '^[+-].*TODO' | wc -l | tr -d ' ')
+          savings=$((removed - added))
+          echo "added=$added" >> "$GITHUB_OUTPUT"
+          echo "removed=$removed" >> "$GITHUB_OUTPUT"
+          echo "savings=$savings" >> "$GITHUB_OUTPUT"
+          echo "tests_added=$tests_added" >> "$GITHUB_OUTPUT"
+          echo "todo_touched=$todo_touched" >> "$GITHUB_OUTPUT"
+      - name: Upsert issue
+        uses: actions/github-script@v7
+        env:
+          ADDED: ${{ steps.stats.outputs.added }}
+          REMOVED: ${{ steps.stats.outputs.removed }}
+          SAVINGS: ${{ steps.stats.outputs.savings }}
+          TESTS_ADDED: ${{ steps.stats.outputs.tests_added }}
+          TODO_TOUCHED: ${{ steps.stats.outputs.todo_touched }}
+        with:
+          script: |
+            const owner = context.repo.owner
+            const repo = context.repo.repo
+            const title = "LifeMosaic Dev Wellness Summary"
+            const added = Number(process.env.ADDED || 0)
+            const removed = Number(process.env.REMOVED || 0)
+            const savings = Number(process.env.SAVINGS || 0)
+            const testsAdded = Number(process.env.TESTS_ADDED || 0)
+            const todoTouched = Number(process.env.TODO_TOUCHED || 0)
+            const trend = savings >= 0 ? "up" : "down"
+            const body = [
+              "Dev Wellness for this week",
+              "",
+              `- Refactor savings: ${savings} LOC (removed ${removed}, added ${added})`,
+              `- Quality wellness: ${testsAdded} test lines added`,
+              `- Tech-debt progress: ${todoTouched} TODO lines touched`,
+              "",
+              `Narrative: You saved ${Math.abs(savings)} LOC and added ${testsAdded} test lines — codebase wellness is trending ${trend} ${trend === "up" ? "📈" : "📉"}.`,
+              "",
+              "Swap opportunities to watch for next week:",
+              "- [ ] Reduce duplication in hot paths (Eco)",
+              "- [ ] Replace deep nesting with guard clauses (Healthier)",
+              "- [ ] Optimize repeated heavy loops (Cheaper)"
+            ].join("\n")
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: "open",
+              per_page: 100
+            })
+            const existing = issues.find(issue => issue.title === title)
+            if (existing) {
+              await github.rest.issues.update({
+                owner,
+                repo,
+                issue_number: existing.number,
+                body
+              })
+            } else {
+              await github.rest.issues.create({
+                owner,
+                repo,
+                title,
+                body
+              })
+            }
